@@ -28,7 +28,7 @@ CROSS_COMPILE = arm-none-eabi-
 
 AS = $(CROSS_COMPILE)as
 CC = $(CROSS_COMPILE)gcc
-LD = $(CROSS_COMPILE)ld
+LD = $(CROSS_COMPILE)gcc
 OBJCOPY = $(CROSS_COMPILE)objcopy
 SIZE = $(CROSS_COMPILE)size
 
@@ -36,11 +36,11 @@ TOP = ../../../../../..
 INC =  -I../Inc
 INC += -I$(TOP)/Drivers/STM32F4xx_HAL_Driver/Inc
 INC += -I$(TOP)/Drivers/CMSIS/Device/ST/STM32F4xx/Include
-INC += -I$(TOP)/Drivers/BSP/STM32F4-Discovery
+INC += -I$(TOP)/Drivers/BSP/STM32F411E-Discovery
 INC += -I$(TOP)/Drivers/CMSIS/Include
 
-CFLAGS_CORTEX_M4 = -mthumb -mtune=cortex-m4 -mabi=aapcs-linux -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -fsingle-precision-constant -Wdouble-promotion
-CFLAGS = $(INC) -D STM32F407xx -Wall -ansi -std=gnu99 $(CFLAGS_CORTEX_M4) $(COPT)
+CFLAGS_CORTEX_M4 = -mthumb -mtune=cortex-m4 -mabi=aapcs-linux -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -fsingle-precision-constant -Wdouble-promotion 
+CFLAGS = -fno-short-enums $(INC) -D STM32F411xE -Wall -ansi -std=gnu99 $(CFLAGS_CORTEX_M4) $(COPT)
 
 #Debugging/Optimization
 ifeq ($(DEBUG), 1)
@@ -50,14 +50,15 @@ else
 COPT += -Os -DNDEBUG
 endif
 
-LDFLAGS = --nostdlib -T STM32F407VG_FLASH.ld -Map=$(@:.elf=.map) --cref
+COPT +=
+LDFLAGS = -Wl,--nostdlib  -T STM32F411VETx_FLASH.ld -Wl,-Map=$(@:.elf=.map) -Wl,--cref $(CFLAGS_CORTEX_M4)
 
 OBJ = \
-	build/startup_stm32f407xx.o \
+	build/startup_stm32f411xe.o \
 	build/main.o \
 	build/stm32f4xx_it.o \
 	build/system_stm32f4xx.o \
-	build/stm32f4_discovery.o \
+	build/stm32f411e_discovery.o \
 	build/stm32f4xx_hal.o \
 	build/stm32f4xx_hal_cortex.o \
 	build/stm32f4xx_hal_dma.o \
@@ -65,6 +66,7 @@ OBJ = \
 	build/stm32f4xx_hal_i2c.o \
 	build/stm32f4xx_hal_rcc.o \
 	build/stm32f4xx_hal_spi.o \
+	build/syscalls.o \
 
 all: $(BUILD)/flash.elf
 
@@ -88,7 +90,7 @@ $(BUILD)/%.o: %.s
 	$(ECHO) "AS $<"
 	$(Q)$(AS) -o $@ $<
 
-vpath %.c ../Src $(TOP)/Drivers/BSP/STM32F4-Discovery $(TOP)/Drivers/STM32F4xx_HAL_Driver/Src
+vpath %.c ../Src $(TOP)/Drivers/BSP/STM32F411E-Discovery $(TOP)/Drivers/STM32F4xx_HAL_Driver/Src ../../../BSP/SW4STM32/
 $(BUILD)/%.o: %.c
 	$(call compile_c)
 
