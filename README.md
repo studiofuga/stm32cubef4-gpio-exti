@@ -1,18 +1,21 @@
 To use:
 
-Grab a copy of the STM32Cube code from here: http://www.st.com/web/en/catalog/tools/PF259243#
+Grab a copy of the STM32Cube code from here: http://www.st.com/en/embedded-software/stm32cubef4.html
 
-Note that the latest version will probably be different from the version number below
-(so update your path accordingly).
+Unpack the codebase, then clone this repository in the GPIO example directory for the STM32F411RE board:
 
 ```
-cd STM32Cube_FW_F4_V1.1.0/Projects/STM32F4-Discovery/Examples/GPIO/GPIO_EXTI
-git clone https://github.com/dhylands/stm32cubef4-gpio-exti gcc
-cd gcc
-make
+$ cd STM32Cube_FW_F4_V1.16.0/Projects/STM32F411E-Discovery/Examples/GPIO/GPIO_EXTI
+$ git clone https://github.com/studiofuga/stm32cubef4-gpio-exti.git gcc
+$ cd gcc
+$ make
 ```
 
-Put board in DFU mode
+To flash the board you can use openocd:
+
 ```
-make pgm
+$ openocd -f /usr/share/openocd/scripts/board/stm32f4discovery.cfg  -c "program build/flash.elf verify reset"
 ```
+
+
+
